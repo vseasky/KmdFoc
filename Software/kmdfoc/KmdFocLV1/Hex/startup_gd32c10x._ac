@@ -1,0 +1,5 @@
+--target=arm-arm-none-eabi -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -masm=auto -c
+-gdwarf-4 -Wa,armasm,--pd,"__MICROLIB SETA 1"
+-ID:/SoftwareTools/Keil_v5/Packs/GigaDevice/GD32C10x_DFP/1.0.0/Device/Include
+-Wa,armasm,--pd,"__UVISION_VERSION SETA 536" -Wa,armasm,--pd,"GD32C10x SETA 1"
+-o ../hex/startup_gd32c10x.o "../Firmware/CMSIS/GD/GD32C10x/Source/ARM/startup_gd32c10x.s"

@@ -1,0 +1,129 @@
+#include "bsp_kmd.h"
+#include "main.h"
+
+
+kmd_usb kmd_usb_t;
+uint32_t pTxData[PROTOCOL_MAX_U32_LEN];
+uint8_t  pTxBuffer[PROTOCOL_MAX_U32_LEN * 4 + PROTOCOL_DATA_OFFSET+2];
+uint32_t pRxData[64];
+uint8_t  pRxBuffer[PROTOCOL_MAX_U32_LEN * 4 + PROTOCOL_DATA_OFFSET+2];
+
+static bool bsp_kmd_foc_callback(protocol_struct *pProtocol,tBspKmdMsgType pMsgType);
+static bool bsp_receive_callback(bsp_frame *rx_frame);
+
+void bsp_kmd_init()
+{
+    kmd_usb_t.pTxProtocol.frame_st.frame_user.cmd_data.pData = NULL;
+    kmd_usb_t.pTxProtocol.message_st.pData = NULL;
+    init_protocol_pointer(&kmd_usb_t.pTxProtocol, pTxData, pTxBuffer, PROTOCOL_MAX_U32_LEN);
+    kmd_usb_t.pRxProtocol.frame_st.frame_user.cmd_data.pData = NULL;
+    kmd_usb_t.pRxProtocol.message_st.pData = NULL;
+    init_protocol_pointer(&kmd_usb_t.pRxProtocol, pRxData, pRxBuffer, PROTOCOL_MAX_U32_LEN);
+}
+
+void kmdTransmitConfig(protocol_struct *pProtocol)
+{
+    uint8_t i = 0;
+    static float pi_count = 0;
+    pProtocol->frame_st.frame_user.equipment_type 	= 0X0001;
+    pProtocol->frame_st.frame_user.equipment_id 	= 0X0002;
+    pProtocol->frame_st.frame_user.data_id 			= 0X0003;
+//    pProtocol->frame_st.frame_user.cmd_data.data_len = ;
+    make_protocol(pProtocol);
+}
+//USB和串口共用
+bool bsp_kmd_callback(uint8_t *pData,uint16_t uLen,tBspKmdMsgType pMsgType)
+{
+    uint16_t uPos;
+    if((uLen>0)&&(uLen<=kmd_usb_t.pRxProtocol.message_st.max_data_len))
+        {
+            memcpy(pRxBuffer,pData,uLen);
+            parse_protocol(&kmd_usb_t.pRxProtocol);
+
+			//如果未定义USB转CAN，按同种方式返回
+            switch (kmd_usb_t.pRxProtocol.frame_st.frame_user.equipment_type)
+                {
+                case BSP_EQ_TYPE_NULL:
+                    ;
+                    break;
+                case BSP_EQ_TYPE_KMD_FOC:
+                {
+                    //如果是 BSP_EQ_TYPE_KMD_FOC消息
+                    return bsp_kmd_foc_callback(&kmd_usb_t.pRxProtocol,pMsgType);
+                }
+                break;
+                default:
+                    ;
+                    break;
+                }
+        }
+    return false;
+}
+
+////USB和串口共用
+static bool bsp_kmd_foc_callback(protocol_struct *pProtocol,tBspKmdMsgType pMsgType)
+{
+    bsp_frame frame;
+    frame.can_dlc = 0;
+    frame.msg_type = pMsgType;
+    frame.can_id = pProtocol->frame_st.frame_user.equipment_id;
+    memcpy(frame.data,pProtocol->frame_st.frame_user.cmd_data.pData,8);
+    return bsp_receive_callback(&frame);
+}
+
+//对于USB转CAN控制KmdFoc直接转发消息
+static bool bsp_receive_callback(bsp_frame *rx_frame)
+{
+	
+#ifdef KMD_FOC_USB_CAN
+
+			#if (KMD_FOC_USB_CAN==0)
+				
+			#elif KMD_FOC_USB_CAN==1)
+			
+			#endif
+#else
+
+#endif
+#if (defined(KMD_FOC_USB_CAN))&&(KMD_FOC_USB_CAN==0)
+    return bsp_can0_transmit(rx_frame->can_id,rx_frame->data,8);
+#elif (defined(KMD_FOC_USB_CAN))&&(KMD_FOC_USB_CAN==1)
+    return bsp_can1_transmit(rx_frame->can_id,rx_frame->data,8);
+#endif
+    return false;
+}
+
+bool bsp_kmd_transmit(bsp_frame *tx_frame)
+{
+    const uint8_t dataLen = 8;
+    kmd_usb_t.pTxProtocol.frame_st.frame_user.equipment_type 	= BSP_EQ_TYPE_KMD_FOC;
+    kmd_usb_t.pTxProtocol.frame_st.frame_user.equipment_id	 	= tx_frame->can_id;
+    kmd_usb_t.pTxProtocol.frame_st.frame_user.data_id		 	= 0;
+    kmd_usb_t.pTxProtocol.frame_st.frame_user.cmd_data.data_len = dataLen/4;
+    memcpy((char*)(kmd_usb_t.pTxProtocol.frame_st.frame_user.cmd_data.pData),(char*)tx_frame->data,dataLen);
+    make_protocol(&kmd_usb_t.pTxProtocol);
+    switch(tx_frame->msg_type)
+        {
+        case KMD_MSG_FRAME_UART:
+        {
+            //return bsp_uart_transmit((uint8_t*)(kmd_usb_t.pTxProtocol.message_st.pData),kmd_usb_t.pTxProtocol.message_st.data_len);
+
+        } break;
+#ifdef KMD_USB_USER
+        case KMD_MSG_FRAME_USB:
+        {
+            return bsp_kmd_usb_transmit((uint8_t*)(kmd_usb_t.pTxProtocol.message_st.pData),kmd_usb_t.pTxProtocol.message_st.data_len);
+        }
+        break;
+#endif
+        default:
+            break;
+        }
+    return false;
+}
+
+
+
+
+
+

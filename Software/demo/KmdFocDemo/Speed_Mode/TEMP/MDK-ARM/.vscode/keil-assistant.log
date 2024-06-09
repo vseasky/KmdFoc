@@ -1,0 +1,21 @@
+[info] Log at : 2022/6/25|09:01:38|GMT+0800
+
+[info] Log at : 2022/6/25|09:05:34|GMT+0800
+
+[info] Log at : 2022/6/25|09:05:39|GMT+0800
+
+[info] Log at : 2022/6/25|09:08:19|GMT+0800
+
+[SyntaxError: Unexpected token } in JSON at position 6263
+	at JSON.parse (<anonymous>)
+	at F.updateCppProperties (c:\Users\SEASKY\.vscode\extensions\cl.keil-assistant-1.7.0\dist\extension.js:1:10911)
+	at F.<anonymous> (c:\Users\SEASKY\.vscode\extensions\cl.keil-assistant-1.7.0\dist\extension.js:1:12641)
+	at Generator.next (<anonymous>)
+	at c:\Users\SEASKY\.vscode\extensions\cl.keil-assistant-1.7.0\dist\extension.js:1:4542
+	at new Promise (<anonymous>)
+	at r (c:\Users\SEASKY\.vscode\extensions\cl.keil-assistant-1.7.0\dist\extension.js:1:4287)
+	at F.load (c:\Users\SEASKY\.vscode\extensions\cl.keil-assistant-1.7.0\dist\extension.js:1:11372)
+	at w.<anonymous> (c:\Users\SEASKY\.vscode\extensions\cl.keil-assistant-1.7.0\dist\extension.js:1:8799)
+	at Generator.next (<anonymous>)
+	at a (c:\Users\SEASKY\.vscode\extensions\cl.keil-assistant-1.7.0\dist\extension.js:1:4344)
+	at processTicksAndRejections (node:internal/process/task_queues:96:5)]

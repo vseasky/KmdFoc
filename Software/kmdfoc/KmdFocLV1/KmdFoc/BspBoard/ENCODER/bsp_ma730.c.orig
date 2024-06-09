@@ -1,0 +1,100 @@
+#include "bsp_ma730.h"
+
+#define BSP_MA730_NCS_SET() GPIO_BOP(GPIOA) = (uint32_t)GPIO_PIN_4;
+#define BSP_MA730_NCS_RESET() GPIO_BC(GPIOA) = (uint32_t)GPIO_PIN_4;
+
+/* 初始化编码器接口 */
+void bsp_ma730_init(void)
+{
+    spi_parameter_struct spi_init_struct;
+
+    rcu_periph_clock_enable(RCU_GPIOA);
+    rcu_periph_clock_enable(RCU_AF);
+    rcu_periph_clock_enable(RCU_SPI0);
+
+    // PA4   ------> ENC_nCS
+    gpio_bit_set(GPIOA, GPIO_PIN_4);
+    gpio_init(GPIOA, GPIO_MODE_OUT_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_4);
+
+    /* SPI1 GPIO config: SCK/PA5, MISO/PA6, MOSI/PA7 */
+    gpio_init(GPIOA, GPIO_MODE_AF_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_5 | GPIO_PIN_7);
+    gpio_init(GPIOA, GPIO_MODE_IN_FLOATING, GPIO_OSPEED_50MHZ, GPIO_PIN_6);
+
+    /* deinitilize SPI and the parameters */
+    spi_i2s_deinit(SPI0);
+    spi_struct_para_init(&spi_init_struct);
+
+    /* SPI1 parameter config */
+    spi_init_struct.trans_mode = SPI_TRANSMODE_FULLDUPLEX;
+    spi_init_struct.device_mode = SPI_MASTER;
+    spi_init_struct.frame_size = SPI_FRAMESIZE_16BIT;
+    spi_init_struct.clock_polarity_phase = SPI_CK_PL_LOW_PH_2EDGE;
+    spi_init_struct.nss = SPI_NSS_SOFT;
+    spi_init_struct.prescale = SPI_PSC_4;//30Mhz
+    spi_init_struct.endian = SPI_ENDIAN_MSB;
+    spi_init(SPI0, &spi_init_struct);
+
+    spi_enable(SPI0);
+}
+
+bool bsp_ma730_read_raw(uint32_t *pReadRaw)
+{
+    int ret = 0;
+    uint16_t txData = 0;
+    uint16_t rxData = 0;
+    rxData = 0;
+    uint32_t timeout_cnt;
+    static const uint32_t timeout_cnt_num = 20000;
+    // CS
+    BSP_MA730_NCS_RESET();
+    {
+        /* Wait until TXE flag is set to send data */
+        timeout_cnt = 0;
+        while ((RESET == spi_i2s_flag_get(SPI0, SPI_FLAG_TBE))&&(ret==0))
+            {
+                timeout_cnt++;
+                if(timeout_cnt>=timeout_cnt_num)
+                    {
+                        ret = -1;
+                        break;
+                    }
+            }
+        /* Transmit data in 16 Bit mode */
+        spi_i2s_data_transmit(SPI0,txData);
+			
+		timeout_cnt = 0;
+        while ((RESET == spi_i2s_flag_get(SPI0, SPI_FLAG_TRANS))&&(ret==0))
+            {
+                timeout_cnt++;
+                if(timeout_cnt>=timeout_cnt_num)
+                    {
+                        ret = -1;
+                        break;
+                    }
+            }
+        /* Check RXNE flag */
+        timeout_cnt = 0;
+        while ((RESET == spi_i2s_flag_get(SPI0, SPI_FLAG_RBNE))&&(ret==0))
+            {
+                timeout_cnt++;
+                if(timeout_cnt>=timeout_cnt_num)
+                    {
+                        ret = -1;
+                        break;
+                    }
+            }
+        //Read 16-Bits in the data register
+        rxData = spi_i2s_data_receive(SPI0);
+    }
+    // NCS
+    BSP_MA730_NCS_SET();
+    if(ret == 0 )
+        {
+            *pReadRaw = (rxData >> 2);
+            return (true);
+        }
+    else
+        {
+            return false;
+        }
+}

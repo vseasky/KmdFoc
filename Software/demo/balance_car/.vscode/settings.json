@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "*.json": "c",
+        "*.c": "c",
+        "bmi088middleware.h": "c"
+    }
+}

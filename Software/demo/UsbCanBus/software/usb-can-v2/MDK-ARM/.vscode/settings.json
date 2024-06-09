@@ -1,0 +1,125 @@
+{
+    "files.autoGuessEncoding": true,
+    "files.encoding": "gbk",
+    "files.exclude": {
+        "**/*.orig": true
+    },
+    // 头部注释
+    "fileheader.customMade": {
+        // 设置后，保存文件更改默认更新最后编辑人
+        "License": "\n\n\t<one line to give the program's name and a brief idea of what it does.>\n\tCopyright (C) 2022  vSeasky.Liu liuwei_seasky@163.com\n\tThis program is free software: you can redistribute it and/or modify\n\tit under the terms of the GNU General Public License as published by\n\tthe Free Software Foundation, either version 3 of the License, or\n\t(at your option) any later version.\n\n\tThis program is distributed in the hope that it will be useful,\n\tbut WITHOUT ANY WARRANTY; without even the implied warranty of\n\tMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n\tGNU General Public License for more details.\n\n\tYou should have received a copy of the GNU General Public License\n\talong with this program.  If not, see <https://www.gnu.org/licenses/>.\n",
+        "Author": "Copyright (c) 2022, vSeasky.Liu liuwei_seasky@163.com."
+                  "Github": "https://github.com/SEASKY-Master"
+                            "Date": "Do not edit",
+        "FilePath": "Do not edit",
+        "Description": "",
+        // 设置后，默认生成文件相对于项目的路径
+    },
+    "fileheader.cursorMode": {
+        "Description": "",
+        "param": " ",
+        "return": " "
+    },
+
+    // 插件配置项
+    "fileheader.configObj": {
+        "autoAdd": false,
+        // 检测文件没有头部注释，自动添加文件头部注释
+        "autoAddLine": 100,
+        // 文件超过多少行数 不再自动添加头部注释
+        "autoAlready": true,
+        // 只添加插件支持的语言以及用户通过`language`选项自定义的注释
+        // "supportAutoLanguage": [],
+        // 设置之后，在数组内的文件才支持自动添加
+        "folderBlacklist": [
+            "node_modules"
+        ],
+        // 文件夹或文件名禁止自动添加头部注释
+        "wideSame": true,
+        // 头部注释等宽设置
+        "wideNum": 13,
+        "functionWideNum": 13,
+        // 头部注释第几行插入
+        "headInsertLine": {
+            "php": 2 // php文件 插入到第二行
+        },
+        "beforeAnnotation": {},
+        // 头部注释之前插入内容
+        "afterAnnotation": {},
+        // 头部注释之后插入内容
+        "specialOptions": {},
+        // 特殊字段自定义
+        "switch": {
+            "newlineAddAnnotation": true // 默认遇到换行符(\r\n \n \r)添加注释符号
+        },
+        "moveCursor": true,
+        // 自动移动光标到Description所在行
+        "dateFormat": "YYYY-MM-DD HH:mm:ss",
+        "atSymbol": [
+            "@",
+            "@"
+        ],
+        // 更改所有文件的自定义注释中的@符号
+        "atSymbolObj": {},
+        //  更改单独语言/文件的@
+        "colon": [
+            ": ",
+            ": "
+        ],
+        // 更改所有文件的注释冒号
+        "colonObj": {},
+        //  更改单独语言/文件的冒号
+        "filePathColon": "路径分隔符替换",
+        // 默认值： mac: / window是: \ 
+        "openFunctionParamsCheck": true, // 开启关闭自动提取添加函数参数
+        "functionParamsShape": [
+            "(",
+            ")"
+        ],
+        // 函数参数外形自定义
+        "functionBlankSpaceAll": {},
+        // 函数注释空格缩进 默认为空对象 默认值为0 不缩进
+        "functionTypeSymbol": "*",
+        // 参数没有类型时的默认值
+        "typeParamOrder": "type param",
+        "throttleTime": 60000,
+        // 对同一个文件 需要过1分钟再次修改文件并保存才会更新注释
+        // 自定义语言注释符号，覆盖插件的注释格式
+        "language": {
+            // js后缀文件
+            "js": {
+                "head": "/$$",
+                "middle": " $ @",
+                "end": " $/",
+                // 函数自定义注释符号：如果有此配置 会默认使用
+                "functionSymbol": {
+                    "head": "/******* ",
+                    // 统一增加几个*号
+                    "middle": " * @",
+                    "end": " */"
+                },
+                "functionParams": "typescript" // 函数注释使用ts语言的解析逻辑
+            },
+            // 一次匹配多种文件后缀文件 不用重复设置
+            "h/hpp/cpp/c": {
+                "head": "/** ",
+                // 统一增加几个*号
+                "middle": " * @",
+                "end": " */"
+            },
+            // 针对有特殊要求的文件如：test.blade.php
+            "blade.php": {
+                "head": "<!--",
+                "middle": " * @",
+                "end": "-->",
+            }
+        },
+        // 默认注释  没有匹配到注释符号的时候使用。
+        "annotationStr": {
+            "head": "/*",
+            "middle": " * @",
+            "end": " */",
+            "use": false
+        },
+    },
+}

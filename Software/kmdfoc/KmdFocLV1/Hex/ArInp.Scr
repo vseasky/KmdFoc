@@ -1,0 +1,12 @@
+--create ..\Hex\kmdFoc.lib
+..\hex\hal_foc_calibration.o
+..\hex\hal_foc_controller.o
+..\hex\hal_foc_current.o
+..\hex\hal_foc_encoder.o
+..\hex\hal_foc_fsm.o
+..\hex\hal_foc_heap.o
+..\hex\hal_foc_interact.o
+..\hex\hal_foc_struct.o
+..\hex\hal_foc_traptraj.o
+..\hex\hal_foc_usr_config.o
+..\hex\hal_foc_util.o

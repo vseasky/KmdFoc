@@ -1,0 +1,139 @@
+#include "gd32c10x_it.h"
+#include "main.h"
+
+#ifdef KMD_USB_USER
+#include "drv_usbd_int.h"
+#include "cdc_acm_core.h"
+#endif
+
+
+#include "bsp_systick.h"
+#include "bsp_can.h"
+#include "bsp_kmd.h"
+
+
+#ifdef KMD_USB_USER
+extern usb_core_driver cdc_acm;
+extern uint32_t usbfs_prescaler;
+#endif
+extern void usb_timer_irq (void);
+
+
+void NMI_Handler(void)
+{
+    Error_Handler();
+}
+
+void HardFault_Handler(void)
+{
+    Error_Handler();
+}
+
+void MemManage_Handler(void)
+{
+    Error_Handler();
+}
+void BusFault_Handler(void)
+{
+    Error_Handler();
+}
+
+void UsageFault_Handler(void)
+{
+    Error_Handler();
+}
+
+void SVC_Handler(void)
+{
+    Error_Handler();
+}
+
+void DebugMon_Handler(void)
+{
+    Error_Handler();
+}
+
+void PendSV_Handler(void)
+{
+    Error_Handler();
+}
+
+void SysTick_Handler(void)
+{
+    SysTickCnt++;
+}
+
+/*!
+    \brief      this function handles CAN0 RX0 exception
+    \param[in]  none
+    \param[out] none
+    \retval     none
+*/
+void CAN0_RX0_IRQHandler(void)
+{
+    /* check the receive message */
+    bsp_can0_irq_callback();
+}
+
+/*!
+    \brief      this function handles CAN1 RX0 exception
+    \param[in]  none
+    \param[out] none
+    \retval     none
+*/
+void CAN1_RX0_IRQHandler(void)
+{
+    /* check the receive message */
+    bsp_can1_irq_callback();
+}
+
+void TIMER5_IRQHandler(void)
+{
+    static uint32_t timer5_count = 0;
+    if(SET == timer_interrupt_flag_get(TIMER5, TIMER_INT_FLAG_UP))
+        {
+            /* clear update interrupt bit */
+            timer_interrupt_flag_clear(TIMER5, TIMER_INT_FLAG_UP);
+            key_enc_scanf();
+            timer5_count++;
+        }
+}
+
+
+#ifdef KMD_USB_USER
+void TIMER2_IRQHandler(void)
+{
+    usb_timer_irq();
+}
+
+/*GD32的USB必须是收一次发一次*/
+void  USBFS_IRQHandler (void)
+{
+    usbd_isr(&cdc_acm);
+
+            bsp_usb_vcp_auto_receive();
+}
+
+/*!
+    \brief      this function handles USBFS wakeup interrupt request.
+    \param[in]  none
+    \param[out] none
+    \retval     none
+*/
+void USBFS_WKUP_IRQHandler(void)
+{
+    if (cdc_acm.bp.low_power)
+        {
+
+            SystemInit();
+
+            rcu_usb_clock_config(usbfs_prescaler);
+
+            rcu_periph_clock_enable(RCU_USBFS);
+
+            usb_clock_active(&cdc_acm);
+        }
+
+    exti_interrupt_flag_clear(EXTI_18);
+}
+#endif

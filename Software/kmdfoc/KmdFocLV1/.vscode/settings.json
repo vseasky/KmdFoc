@@ -1,0 +1,14 @@
+{
+    "files.autoGuessEncoding": true,
+    "files.encoding": "gbk",
+    "files.exclude": {
+        "**/*.orig": true
+    },
+    "files.associations": {
+        "hal_foc_interface.h": "c",
+        "hal_foc_enum.h": "c",
+        "bsp_device_id.h": "c",
+        "hal_foc_config.h": "c",
+        "hal_foc_struct.h": "c"
+    }
+}

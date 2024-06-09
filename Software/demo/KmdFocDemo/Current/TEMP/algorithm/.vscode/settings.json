@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "*.json": "c",
+        "*.c": "c",
+        "mahonyahrs.h": "c"
+    }
+}
