@@ -16,8 +16,4 @@
 
 [KmdFoc 视频演示](https://www.bilibili.com/video/BV1BY4y1j7U6/?spm_id_from=333.337.search-card.all.click)
 
-
-目前github上的源码为 静态库版本源码，购买开发板可以获取 完整源码，你可以先通过静态库版本和其他演示程序，查看代码风格。
-
-
 [淘宝 KmdFoc 控制器](https://m.tb.cn/h.gfOaykp?tk=bMPzWCR8Cfz)
